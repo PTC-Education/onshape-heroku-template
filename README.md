@@ -147,7 +147,7 @@ Change the succeessful return statement in `authorize` to `return redirect('inde
 Add `path('', views.index, name='index')` to `urls.py`
 
 ## Section 4 - Prepate to Deploy to Heroku
-Last step before moving to hosting: let's create `requirements.txt`.  This file is a list of all Python packages used by our project.  It can be used by anyone else replicating the project. Think of it as a shopping list of dependencies that makes your app portable and deployable :smiley:
+Last step before moving to hosting: let's create `requirements.txt`.  This file is a list of all Python packages used by our project.  It can be used by anyone else replicating the project. Think of it as a shopping list of dependencies that makes your app portable and deployable 😃
 
 Make sure virtual environment is activated then run `pip freeze > requirements.txt`
 
@@ -202,3 +202,8 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 * We need a db.  Go to Resources -> Add-on Services -> Search for Heroku Postgres
 * Add the cheapest one.  It will take a minute or two to provision.
 * Deploy -> Deploy Branch
+* More -> Run console.  Run this: `python manage.py migrate`
+
+You should be ready to test! 🚀
+
+🍺
