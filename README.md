@@ -147,11 +147,43 @@ Change the succeessful return statement in `authorize` to `return redirect('inde
 Add `path('', views.index, name='index')` to `urls.py`
 
 ## Section 4 - Host on Heroku
-Last step before moving to hosting: let's create `requirements.txt`
+Last step before moving to hosting: let's create `requirements.txt`.  This file is a list of all Python packages used by our project.  It can be used by anyone else replicating the project. Think of it as a shopping list of dependencies that makes your app portable and deployable :smiley:
 
 Make sure virtual environment is activated then run `pip freeze > requirements.txt`
 
 Install a couple of Heroku-specific packages:
+
 `pip install gunicorn psycopg2-binary dj-database-url whitenoise`
 
 Re-run `pip freeze > requirements.txt`
+
+Create a new file in the project root called `Procfile` and put one line in it.
+
+`web: gunicorn onshape_oauth_project.wsgi`
+
+This tells Heroku how to run our app.
+
+In `settings.py`, do the following:
+
+* Change `ALLOWED_HOSTS` to:
+
+`ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com']`
+
+* Below the `DATABASES` add:
+
+```python
+# Use PostgreSQL on Heroku
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+```
+
+* Add WhiteNoise to `MIDDLEWARE` right after `SecuirtyMiddleware` with this line 
+
+`'whitenoise.middleware.WhiteNoiseMiddleware',`
+
+* Add these lines to the bottom under `STATIC_URL`
+
+```python
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+```
