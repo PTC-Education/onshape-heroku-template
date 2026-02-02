@@ -1,1 +1,157 @@
 # onshape-heroku-template
+
+## Section 1 - Set Up the Django App
+
+Create empty repo in GitHub
+
+Cone locally
+
+Create a virtual environment and activate it
+
+```
+python3 -m venv .venv
+source .venv/bin/activate
+````
+Install Django
+
+`pip install django`
+
+Create Django project
+
+`django-admin startproject onshape_oauth_project .` (with the period at the end)
+
+This creates `manage.py` in your root folder and trhe `onshape_oauth_project/` folder with `settings.py`, `urls.py`, etc.
+
+You should now have:
+```
+your-repo/
+├── manage.py 
+├── onshape_oauth_project/
+│   ├── settings.py
+│   ├── urls.py
+│   └── ...
+├── .gitignore
+└── README.md
+```
+
+Now we're ready to make the app inside the Django project.
+
+`python3 manage.py startapp onshape_app`
+
+Now, you have
+
+```
+your-repo/
+├── manage.py
+├── onshape_oauth_project/    ← Project config (settings.py, urls.py)
+├── onshape_app/              ← Your app (models.py, views.py)
+├── venv/
+├── .gitignore
+├── README.md
+└── LICENSE
+```
+
+Open `onshape_oauth_project/settings.py` and find the `INSTALLED_APPS` list.  Add `'onshape_app'` or whatever you called it (with the single quotes) at the end.
+
+Next, we are going to create the framework to store Onshape users and their access tokens while they are using the app.  Using a Django database turned out to be easier than trying to store these things in session cookies.  
+
+In `onshape_app/models.py` we create an `OnshapeUser` class (see actual code).  It creates the database structure for storing users with their OAuth tokens and other context variables.
+
+Once `models.py` has been updated, we need to "migrate" the changes, meaning create/update the database.  
+
+`python3 manage.py makemigrations` will create the instructions for what to build
+
+`python3 manage.py migrate` will apply the changes.  You should now have a `db.sqlite3` file.
+
+## Section 2 - Execute the OAuth Process
+
+When the user opens the app, the app extension will call `oauthSignin`.  This request will be handled by the `oauth_signin` function in `views.py`.  Create that function now (see actual code).  
+
+We also need to wire up the view so it's accessible as a view.  First, create `oauth_app/urls.py` and add the code to handle calls (see acutal code).
+
+Next, update `onshape_oauth_project/urls.py` to connect the the app URLs to the main project (see actual code).
+
+We are almost ready for the first test.  Open `settings.py` and add `X_FRAME_OPTIONS = 'ALLOWALL'` to the bottom.  This allows for local testing.
+
+Next, we need to add environment variables.  If you haven't done so already, go to the Onshape Dev Portal and create your OAuth app for local testing.  You'll receive an OAuth client secret and key.  We need to create environment variables out of those.  In the Onshape OAuth tab, make sure the redirect URL is set to `http://localhost:8000/oauthRedirect`
+
+In terminal run:
+```
+export OAUTH_URL=https://oauth.onshape.com
+export OAUTH_CLIENT_ID=xxxxxxxxxxxxxxxxxxx
+export OAUTH_CLIENT_SECRET=xxxxxxxxxxxxxxx
+```
+When the user opens the app, `oauth_signin` will use these variables to authenticate the user.  Then, `oauthRedirect` will be called.  You should have already added `path('oauthRedirect/', views.authorize, name='authorize')` to `urls.py` to handle this.
+
+Add the following function to `views.py`
+
+```python
+def authorize(request: HttpRequest):
+    code = request.GET.get('code')
+    return HttpResponse(f"Authorization callback received! Code: {code}")
+```
+
+We're ready for our first test! Run this line:
+
+`python3 manage.py runserver`
+
+Then open the right-panel app.  You should see the successful authorization message.
+
+The last step is to exchange the o=aurthorization code for tokens and store them.
+
+First, might need to 
+
+`pip install requests`
+
+Then, update the `authorize` function to handle and store the tokens (see actual code).
+
+## Section 3 - Recirect to index.html
+
+Inside the `onshape_app/` folder, create the following structure.  It's a little much to have all of these directories, but it's Django best practice.
+
+```
+onshape_app/
+├── templates/
+│   └── onshape_app/
+│       └── index.html
+```
+
+The html can be something simple like:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Onshape OAuth App</title>
+</head>
+<body>
+    <h1>Welcome to your Onshape App!</h1>
+    <p>You're successfully authenticated.</p>
+    <p>User ID: {{ user.os_user_id }}</p>
+</body>
+</html>
+```
+
+Add the `index` fucntion to `views.py` (make sure you are importing `render` from `django.shortcuts`)
+
+```python
+def index(request: HttpRequest):
+    """
+    Main app view - shown after successful OAuth
+    """
+    user = OnshapeUser.objects.first()
+    return render(request, 'onshape_app/index.html', {'user': user})
+```
+Change the succeessful return statement in `authorize` to `return redirect('index')`
+
+Add `path('', views.index, name='index')` to `urls.py`
+
+## Section 4 - Host on Heroku
+Last step before moving to hosting: let's create `requirements.txt`
+
+Make sure virtual environment is activated then run `pip freeze > requirements.txt`
+
+Install a couple of Heroku-specific packages:
+`pip install gunicorn psycopg2-binary dj-database-url whitenoise`
+
+Re-run `pip freeze > requirements.txt`

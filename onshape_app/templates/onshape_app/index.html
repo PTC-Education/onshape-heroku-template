@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Onshape OAuth App</title>
+    <link rel="stylesheet" href="{% static 'onshape_app/index.css' %}">
+</head>
+<body>
+    <h1>Welcome to your Onshape App!</h1>
+    <div class="section">
+        <h2>User Info</h2>
+        <div class="info">
+            <p><strong>User ID:</strong> {{ user.os_user_id }}</p>
+            <p><strong>Domain:</strong> {{ user.os_domain }}</p>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Document Info</h2>
+        {% if doc_info.error %}
+            <p class="error">Error: {{ doc_info.error }}</p>
+        {% else %}
+            <div class="info">
+                <p><strong>Name:</strong> {{ doc_info.name }}</p>
+                <p><strong>ID:</strong> {{ doc_info.id }}</p>
+                <p><strong>Created:</strong> {{ doc_info.createdAt }}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

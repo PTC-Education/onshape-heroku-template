@@ -1,0 +1,19 @@
+body { 
+    color: #333;
+    font-family: Flama,Open Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+    margin: 15px;
+}
+
+.section { 
+    margin-bottom: 30px; 
+}
+
+.info { 
+    background: #f5f5f5; 
+    padding: 10px; 
+    border-radius: 5px; 
+}
+
+.error { 
+    color: red; 
+}
