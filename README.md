@@ -146,7 +146,7 @@ Change the succeessful return statement in `authorize` to `return redirect('inde
 
 Add `path('', views.index, name='index')` to `urls.py`
 
-## Section 4 - Host on Heroku
+## Section 4 - Prepate to Deploy to Heroku
 Last step before moving to hosting: let's create `requirements.txt`.  This file is a list of all Python packages used by our project.  It can be used by anyone else replicating the project. Think of it as a shopping list of dependencies that makes your app portable and deployable :smiley:
 
 Make sure virtual environment is activated then run `pip freeze > requirements.txt`
@@ -157,7 +157,7 @@ Install a couple of Heroku-specific packages:
 
 Re-run `pip freeze > requirements.txt`
 
-Create a new file in the project root called `Procfile` and put one line in it.
+Create a new file in the project root (important) called `Procfile` and put one line in it.
 
 `web: gunicorn onshape_oauth_project.wsgi`
 
@@ -187,3 +187,18 @@ if 'DATABASE_URL' in os.environ:
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 ```
+
+## Section 5 - Deploy to Heroku
+
+* Log into Heroku
+* Create new app
+* Give it a name
+* Create app
+* Connect to GitHub
+* Settings -> Reveal Config Vars.  Add these:
+  * OAUTH_URL = https://oauth.onshape.com
+  * OAUTH_CLIENT_ID = your client ID
+  * OAUTH_CLIENT_SECRET = your client secret
+* We need a db.  Go to Resources -> Add-on Services -> Search for Heroku Postgres
+* Add the cheapest one.  It will take a minute or two to provision.
+* Deploy -> Deploy Branch
