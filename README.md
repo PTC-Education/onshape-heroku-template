@@ -1,12 +1,24 @@
 # onshape-heroku-template
 
+## Overview
+
+This repo explains the process for creating a Django app and hosting it on Heroku.  Most of the code is Python and I did all development on a Mac.  For local testing, I have an Onshape app extension with this Action URL:
+
+`http://localhost:8000/oauthSignin?etype=partstudios&did={$documentId}&wvm={$workspaceOrVersion}&wvmid={$workspaceOrVersionId}&eid={$elementId}`
+
+Once the app is on Heroku, the Action URL is:
+
+`https://onshape-heroku-template-7c09166ec974.herokuapp.com/oauthSignin?did={$documentId}&wvm={$workspaceOrVersion}&wvmid={$workspaceOrVersionId}&eid={$elementId}`
+
+The URL for the hosted Heroku app is in the Heroku dashboard under Settings -> Domains.
+
 ## Section 1 - Set Up the Django App
 
-Create empty repo in GitHub
+Create and empty repo in GitHub (I like to add a `README`, add a Python `.gitignore` and an MIT license.)
 
-Cone locally
+Clone the repo locally
 
-Create a virtual environment and activate it
+Create a virtual environment and activate it:
 
 ```
 python3 -m venv .venv
@@ -16,7 +28,7 @@ Install Django
 
 `pip install django`
 
-Create Django project
+Create Django project (use a suitable name)
 
 `django-admin startproject onshape_oauth_project .` (with the period at the end)
 
@@ -34,7 +46,7 @@ your-repo/
 └── README.md
 ```
 
-Now we're ready to make the app inside the Django project.
+Now we're ready to make the app inside the Django project (that's the framework; a Django project with one ore more apps in it).
 
 `python3 manage.py startapp onshape_app`
 
@@ -97,9 +109,9 @@ We're ready for our first test! Run this line:
 
 Then open the right-panel app.  You should see the successful authorization message.
 
-The last step is to exchange the o=aurthorization code for tokens and store them.
+The last step is to exchange the aurthorization code for tokens and store them.
 
-First, might need to 
+First, you might need to 
 
 `pip install requests`
 

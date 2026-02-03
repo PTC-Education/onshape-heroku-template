@@ -16,9 +16,10 @@ class OnshapeUser(models.Model):
     # Onshape environment info
     os_domain = models.CharField(max_length=200, blank=True, null=True)
     did = models.CharField(max_length=200, blank=True, null=True)  # Document ID
-    wv = models.CharField(max_length=10, blank=True, null=True)    # Workspace/Version/Microversion
-    wvid = models.CharField(max_length=200, blank=True, null=True) # Workspace/Version ID
+    wvm = models.CharField(max_length=10, blank=True, null=True)    # Workspace/Version/Microversion
+    wvmid = models.CharField(max_length=200, blank=True, null=True) # Workspace/Version ID
     eid = models.CharField(max_length=200, blank=True, null=True)  # Element ID
+    etype = models.CharField(max_length=20, blank=True, null=True)  # Element Type (not necessary for all apps)
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

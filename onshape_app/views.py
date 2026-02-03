@@ -29,12 +29,12 @@ def oauth_signin(request: HttpRequest):
         user = OnshapeUser(os_user_id=user_id)
     
     # Update user's current Onshape context
-    # http://localhost:8000/oauthSignin?etype=partstudios&did={$documentId}&wvm={$workspaceOrVersion}&wvmid={$workspaceOrVersionId}&eid={$elementId}
     user.os_domain = request.GET.get('server')
     user.did = request.GET.get('did')
-    user.wv = request.GET.get('wvm')
-    user.wvid = request.GET.get('wmvid')
+    user.wvm = request.GET.get('wvm')
+    user.wvmid = request.GET.get('wvmid')
     user.eid = request.GET.get('eid')
+    user.etype = request.GET.get('etype')
     user.save()
 
     # If user has tokens, go to app. Otherwise, do OAuth.
@@ -106,8 +106,11 @@ def index(request: HttpRequest, os_user_id: str):
     
     doc_info = get_doc_info(curr_user.os_domain, curr_user.did, auth_token=curr_user.access_token)
 
+    part_info = get_part_info(curr_user.os_domain, curr_user.did, curr_user.wvm, curr_user.wvmid, curr_user.eid, curr_user.etype, auth_token=curr_user.access_token)
+    
     context = {
         "user": curr_user,
-        "doc_info": doc_info
+        "doc_info": doc_info,
+        "part_info": part_info
     }
     return render(request, "onshape_app/index.html", context=context)

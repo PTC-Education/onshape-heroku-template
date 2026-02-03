@@ -27,5 +27,18 @@
             </div>
         {% endif %}
     </div>
+
+    <div class="section">
+        <h2>Part Info</h2>
+        {% if part_info.error %}
+            <p class="error">Error: {{ part_info.error }}</p>
+        {% else %}
+            <div class="info">
+                {% for part in part_info %}
+                    <p><strong>Name:</strong> {{ part.name }}, <strong>ID:</strong> {{ part.partId }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
